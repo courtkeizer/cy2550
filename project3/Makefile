@@ -3,30 +3,26 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Iinclude -g
 
 # Directories
-SRCDIR = src
-OBJDIR = obj
-BINDIR = bin
+SRCDIR = .
+OBJDIR =
+BINDIR =
 
 # Sources and objects
-SRCS = $(shell find $(SRCDIR) -name "*.cpp")   # Change file extension to .cpp
-OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))   # Change file extension to .cpp
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst %.cpp, %.o, $(SRCS))
 
 # Targets
-TARGET = $(BINDIR)/xkcdpwgen
+TARGET = xkcdpwgen
 
 all: $(TARGET)
 
-$(OBJDIR) $(BINDIR):
-	mkdir -p $@
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $^
 
-$(TARGET): $(OBJS) | $(BINDIR)
-	$(CXX) -o $@ $^   # Change the compiler from $(CC) to $(CXX)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)   # Change file extension to .cpp
-	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<   # Change the compiler from $(CC) to $(CXX)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-#	rm -rf $(OBJDIR)/* $(BINDIR)/*
+	rm -rf $(TARGET) $(OBJS)
 
 .PHONY: all clean
